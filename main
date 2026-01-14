@@ -1,1 +1,75 @@
+#!/usr/bin/env python3
+"""Terminal mini-game: Guess the Number."""
 
+from __future__ import annotations
+
+import random
+
+
+WELCOME_TEXT = """
+Welcome to Guess the Number!
+
+Rules:
+- I pick a number between 1 and 100.
+- You have 7 attempts to guess it.
+- After each guess, I will tell you if it's higher or lower.
+
+Type 'quit' at any time to exit.
+""".strip()
+
+
+def get_guess(remaining_attempts: int) -> int | None:
+    """Prompt the player for a guess or quit command."""
+    prompt = f"Guess a number (attempts left: {remaining_attempts}): "
+    raw = input(prompt).strip().lower()
+    if raw in {"quit", "q", "exit"}:
+        return None
+    if not raw.isdigit():
+        print("Please enter a whole number between 1 and 100, or 'quit'.")
+        return -1
+    guess = int(raw)
+    if not 1 <= guess <= 100:
+        print("That number is out of bounds. Pick between 1 and 100.")
+        return -1
+    return guess
+
+
+def play_round() -> None:
+    """Run a single round of the game."""
+    target = random.randint(1, 100)
+    remaining = 7
+
+    while remaining > 0:
+        guess = get_guess(remaining)
+        if guess is None:
+            print("Thanks for playing!")
+            return
+        if guess == -1:
+            continue
+
+        remaining -= 1
+        if guess == target:
+            print("🎉 You got it! Nicely done.")
+            return
+        if guess < target:
+            print("Too low.")
+        else:
+            print("Too high.")
+
+    print(f"Out of attempts! The number was {target}.")
+
+
+def play_game() -> None:
+    """Play multiple rounds until the player quits."""
+    print(WELCOME_TEXT)
+
+    while True:
+        play_round()
+        again = input("Play again? (y/n): ").strip().lower()
+        if again not in {"y", "yes"}:
+            print("Goodbye!")
+            break
+
+
+if __name__ == "__main__":
+    play_game()
